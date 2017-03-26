@@ -3,14 +3,12 @@ import pandas as pd        # For loading and processing the dataset
 import tensorflow as tf    # Of course, we need TensorFlow.
 from sklearn.model_selection import train_test_split
 
-
-
 # Parameters
 learning_rate = 0.005
 training_epochs = 15
 batch_size = 100
 display_step = 1
-dropout = 1
+dropout = 0.90
 
 # Network Parameters
 n_hidden_1 = 256
@@ -64,13 +62,13 @@ def load_data(train_data):
 
 # Create model
 def multilayer_perceptron(x, weights, biases):
-    # Hidden layer with RELU activation
+    # Hidden layer with Tanh activation
     layer_1 = tf.add(tf.matmul(x, weights['h1']), biases['b1'])
-    layer_1 = tf.nn.relu(layer_1)
+    layer_1 = tf.nn.tanh(layer_1)
     layer_1 = tf.nn.dropout(layer_1, dropout)
-    # Hidden layer with RELU activation
+    # Hidden layer with Tanh activation
     layer_2 = tf.add(tf.matmul(layer_1, weights['h2']), biases['b2'])
-    layer_2 = tf.nn.relu(layer_2)
+    layer_2 = tf.nn.tanh(layer_2)
     layer_2 = tf.nn.dropout(layer_2, dropout)
     # Output layer with linear activation
     out_layer = tf.add(tf.matmul(layer_2, weights['out']), biases['out'])
@@ -100,7 +98,7 @@ if __name__ == '__main__':
 
     y_output = multilayer_perceptron(inputs, weights, biases)
     cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=y_output, labels=label))
-    optimizer = tf.train.GradientDescentOptimizer(lr).minimize(cost)
+    optimizer = tf.train.AdamOptimizer(lr).minimize(cost)
 
     # Prediction
     pred = tf.nn.softmax(y_output)
